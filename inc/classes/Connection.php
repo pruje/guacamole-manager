@@ -162,8 +162,8 @@ class Connection
     public static function create($data)
     {
         $connectionId = (new Database)->selectOne("SELECT connection_id FROM guacamole_connection
-                                                   WHERE connection_name=? and parent_id=?",
-                                                  [$data['connection_name'], $data['parent_id']]);
+                                                   WHERE connection_name=? and parent_id".($data['parent_id'] ? $data['parent_id'] : ' IS NULL'),
+                                                  [$data['connection_name']]);
 
         if (!$connectionId) {
             $connectionId = (new Database)->insertOne('guacamole_connection', [
@@ -259,7 +259,9 @@ class Connection
             }
 
             // add required fields
-            $parameters['parent_id'] = $connectionGroup;
+            $parameters['parent_id'] = null;
+            if ($connectionGroup != '')
+                $parameters['parent_id'] = $connectionGroup;
 
             if (isset($parameters['wol-mac-addr'])) {
                 $parameters['wol-send-packet'] = 'true';

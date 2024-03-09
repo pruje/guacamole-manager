@@ -66,7 +66,8 @@
   </div>
   <div class="mb-3">
     <label class="form-label">Connection group</label>
-    <select name="group" class="form-control" required>
+    <select name="group" class="form-control">
+      <option value="">ROOT</option>
       <?php
           $connectionGroups = ConnectionGroup::getAll();
           foreach ($connectionGroups as $connectionGroup) {
