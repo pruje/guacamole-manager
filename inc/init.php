@@ -17,7 +17,7 @@ if (!preg_match('/^\w+$/', DATABASE)) {
 }
 
 // load main database class
-require_once('inc/database/database.php');
+require_once('inc/database/sqlDatabase.php');
 
 // load internal database class if exists
 if (file_exists("inc/database/".DATABASE.".php")) {

@@ -2,15 +2,95 @@
 /*
  *  Database support on standard SQL databases
  *  MySQL/MariaDB, PostgreSQL, SQLite should be classes that extends this one.
- *
- *  DISCLAIMER:
- *  I know, NoSQL like mongoDB should be used for this project, but for now,
- *  I try to do my best with the things I know best.
- *  Please help me to make OnMyShelf better!
  */
 
-class GlobalDatabase
+abstract class SqlDatabase
 {
+    protected $connection;
+
+    public function __construct()
+    {
+        try {
+            $this->connection = new PDO(DATABASE.':host='.DB_HOST.';dbname='.DB_NAME.';charset=utf8', DB_USER, DB_PASSWORD);
+        } catch (Exception $e) {
+            Logger::fatal("Error while connecting to database:\n".$e);
+            exit(1);
+        }
+    }
+
+
+    /************************
+     *  DATABASE SQL UTILS  *
+     ************************/
+
+    /**
+     * Runs a SQL query (e.g. ALTER TABLE)
+     *
+     * @param string $sql SQL query
+     * @return bool  Success
+     */
+    protected function execute(string $sql)
+    {
+        return $this->connection->exec($sql) !== false;
+    }
+
+
+    /**
+     * Runs a SELECT query
+     * @param string $query SQL query
+     * @param array $args
+     * @return array|bool
+     */
+    protected function select(string $query, array $args=[])
+    {
+        $stmt = $this->connection->prepare($query);
+        if ($stmt === false) {
+            Logger::error("Error while create statement for query: $query");
+            return false;
+        }
+
+        // Logger::debug("SQL query: $query");
+        // Logger::var_dump($args);
+
+        if ($stmt->execute($args) === false) {
+            return false;
+        }
+
+        $results = [];
+
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $results[] = $row;
+        }
+
+        return $results;
+    }
+
+
+    /**
+     * Creates a prepared query, binds the given parameters and returns the result of the executed
+     * @param string $query SQL query
+     * @param array $args   Array key => value
+     * @return bool
+     */
+    protected function write(string $query, array $args=[])
+    {
+        if (count($args) == 0) {
+            return false;
+        }
+
+        $stmt = $this->connection->prepare($query);
+        if (!$stmt) {
+            Logger::error("Error while create statement for query: $query");
+            return false;
+        }
+
+        // Logger::debug("SQL query: $query");
+        // Logger::var_dump($args);
+
+        return $stmt->execute($args);
+    }
+
+
     /**
      * Runs a SELECT query and returns the first row of results
      * @param  string $query SQL SELECT query
@@ -85,13 +165,13 @@ class GlobalDatabase
      */
     public function count($table, array $filters=[])
     {
-        $query = 'SELECT COUNT(*) FROM `'.$table.'`';
+        $query = "SELECT COUNT(*) FROM `$table`";
 
         if (count($filters) > 0) {
-            $query .= ' WHERE ';
+            $query .= " WHERE ";
 
             foreach ($filters as $key => $value) {
-                $query .= $key.'=? AND ';
+                $query .= "`$key`=? AND ";
             }
 
             // delete last " AND "
@@ -99,7 +179,7 @@ class GlobalDatabase
         }
 
         // runs query
-        return $this->selectOne($query, $filters);
+        return $this->selectOne($query, array_values($filters));
     }
 
 
@@ -149,7 +229,7 @@ class GlobalDatabase
         $query = 'UPDATE `'.$table.'` SET ';
 
         foreach ($values as $key => $v) {
-            $query .= '`'.$key.'`=?,';
+            $query .= '`'.$key.'`=:'.$key.',';
         }
         // delete last ","
         $query = substr($query, 0, -1);
@@ -158,7 +238,7 @@ class GlobalDatabase
             $query .= ' WHERE ';
 
             foreach ($filters as $key => $v) {
-                $query .= '`'.$key.'`=? AND ';
+                $query .= '`'.$key.'`=:'.$key.' AND ';
             }
 
             // delete last " AND "
@@ -185,7 +265,7 @@ class GlobalDatabase
             $query .= ' WHERE ';
 
             foreach ($filters as $key => $value) {
-                $query .= '`'.$key.'`=? AND ';
+                $query .= '`'.$key.'`=:'.$key.' AND ';
             }
 
             // delete last " AND "
