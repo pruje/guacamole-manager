@@ -1,11 +1,11 @@
 <h1>Wake on LAN</h1>
 <?php
     // process form
-    if (isset($_POST['group']) && $_POST['group'] != '') {
+    if (isset($_GET['group']) && $_GET['group'] != '') {
         $alert = 'success';
         $message = '';
 
-        $group = new ConnectionGroup(htmlspecialchars($_POST['group']));
+        $group = new ConnectionGroup(htmlspecialchars($_GET['group']));
         if (!$group) {
             echo 'Connection group not found';
             die();
@@ -24,8 +24,8 @@
         die();
     }
 
-    if (isset($_POST['connection']) && $_POST['connection'] != '') {
-        $connection = Connection::getByName(htmlspecialchars($_POST['connection']));
+    if (isset($_GET['connection']) && $_GET['connection'] != '') {
+        $connection = Connection::getByName(htmlspecialchars($_GET['connection']));
         if (!$connection) {
             echo 'Connection not found';
             die();
@@ -44,7 +44,7 @@
     }
 ?>
 
-<form method="POST" enctype="multipart/form-data">
+<form method="GET" enctype="multipart/form-data">
   <div class="mb-3">
     <label class="form-label">Wake up a group:</label>
     <select name="group" class="form-control">
