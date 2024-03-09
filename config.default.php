@@ -12,3 +12,6 @@ define('DB_PASSWORD', 'guacamole');
 define('LOGGER_LEVEL', 'INFO');
 
 //define('LOGFILE', 'guacmanager.log');
+
+// Guacamole URL
+define('GUACAMOLE_URL', '../');

@@ -12,4 +12,5 @@ if (!$connection) {
     die();
 }
 
-header("Location: ../guacamole/#/client/".base64_encode($connection->id."\0c\0".DATABASE));
+// redirect
+header("Location: ".GUACAMOLE_URL."/guacamole/#/client/".base64_encode($connection->id."\0c\0".DATABASE));

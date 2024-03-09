@@ -32,3 +32,6 @@ require_once('classes/Connection.php');
 require_once('classes/ConnectionGroup.php');
 require_once('classes/ConnectionTemplate.php');
 require_once('classes/UserGroup.php');
+
+if (!defined('GUACAMOLE_URL'))
+    define('GUACAMOLE_URL', '..');
