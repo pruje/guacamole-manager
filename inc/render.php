@@ -3,7 +3,6 @@
     $routes = [
         'home' => 'Home',
         'import' => 'Connections import',
-        'wol' => '',
         'wakeonlan' => 'Wake on LAN',
         'help' => 'Help',
     ];
@@ -17,13 +16,12 @@
 
     // remove subpath
     $route = preg_replace('/\/.*/', '', $route);
-
     // remove GET parameters
     $route = preg_replace('/\?.*/', '', $route);
 
-    if (array_key_exists($route, $routes)) {
-        if ($routes[$route] == '') {
-            require_once('views/'.$route.'.php');
+    if (file_exists("views/$route.php")) {
+        if (!isset($routes[$route])) {
+            require_once("views/$route.php");
             die();
         }
     } else {
@@ -70,13 +68,7 @@
       </div>
     </nav>
     <div class="container">
-      <?php
-          if (array_key_exists($route, $routes)) {
-              require_once('views/'.$route.'.php');
-          } else {
-              echo '<h3>Page not found</h3>';
-          }
-      ?>
+      <?php require_once("views/$route.php") ?>
     </div>
   </body>
 </html>
