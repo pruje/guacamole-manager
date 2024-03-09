@@ -3,7 +3,7 @@
 *  MySQL/MariaDB database support
 */
 
-class Database extends GlobalDatabase
+class Database extends SqlDatabase
 {
     /**
      * Creates a prepared query, binds the given parameters and returns the result of the executed

@@ -1,6 +1,12 @@
 <h1>Connections import</h1>
 <?php
-    $templates = ConnectionTemplate::getAll();
+    try {
+        $templates = ConnectionTemplate::getAll();
+    }
+    catch (Throwable $t) {
+        echo "You have an error with your database. Please initialize it if it's not done.";
+        die();
+    }
     if (!$templates || count($templates) == 0) {
 ?>
   <div class="alert alert-warning" role="alert">

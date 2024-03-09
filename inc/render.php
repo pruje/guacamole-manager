@@ -19,9 +19,9 @@
     // remove GET parameters
     $route = preg_replace('/\?.*/', '', $route);
 
-    if (file_exists("views/$route.php")) {
+    if (file_exists("inc/views/$route.php")) {
         if (!isset($routes[$route])) {
-            require_once("views/$route.php");
+            require_once("inc/views/$route.php");
             die();
         }
     } else {
@@ -68,7 +68,7 @@
       </div>
     </nav>
     <div class="container">
-      <?php require_once("views/$route.php") ?>
+      <?php require_once("inc/views/$route.php") ?>
     </div>
   </body>
 </html>

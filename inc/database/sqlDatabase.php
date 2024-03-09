@@ -29,7 +29,7 @@ abstract class SqlDatabase
      * @param string $sql SQL query
      * @return bool  Success
      */
-    protected function execute(string $sql)
+    public function execute(string $sql)
     {
         return $this->connection->exec($sql) !== false;
     }
@@ -41,7 +41,7 @@ abstract class SqlDatabase
      * @param array $args
      * @return array|bool
      */
-    protected function select(string $query, array $args=[])
+    public function select(string $query, array $args=[])
     {
         $stmt = $this->connection->prepare($query);
         if ($stmt === false) {
@@ -72,7 +72,7 @@ abstract class SqlDatabase
      * @param array $args   Array key => value
      * @return bool
      */
-    protected function write(string $query, array $args=[])
+    public function write(string $query, array $args=[])
     {
         if (count($args) == 0) {
             return false;

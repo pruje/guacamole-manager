@@ -45,20 +45,28 @@
 ?>
 
 <form method="GET" enctype="multipart/form-data">
+  <?php
+      $connectionGroups = ConnectionGroup::getAll();
+
+      if ($connectionGroups) {
+  ?>
+
   <div class="mb-3">
     <label class="form-label">Wake up a group:</label>
     <select name="group" class="form-control">
       <option value=""></option>
       <?php
-          $connectionGroups = ConnectionGroup::getAll();
           foreach ($connectionGroups as $connectionGroup) {
               echo '<option value="'.$connectionGroup['id'].'">'.$connectionGroup['name'].'</option>';
           }
       ?>
     </select>
   </div>
+  <?php
+      }
+  ?>
   <div class="mb-3">
-    <label class="form-label">or a connection:</label>
+    <label class="form-label">Wake up a single connection:</label>
     <input class="form-control" type="text" name="connection">
   </div>
   <button type="submit" class="btn btn-primary mb-3">Wake up</button>

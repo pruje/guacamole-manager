@@ -2,7 +2,7 @@
 
 class Connection
 {
-    protected $id;
+    public $id;
     protected $name;
     protected $connection_parameters;
 
