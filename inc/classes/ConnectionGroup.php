@@ -14,19 +14,48 @@ class ConnectionGroup
     }
 
 
-    public function getConnections()
+    public function getChildGroups()
     {
-        $connections = (new Database)->select("SELECT connection_id AS id
-                                               FROM guacamole_connection
-                                               WHERE parent_id=?",[$this->id]);
-        if (!$connections) {
-            return false;
+        $data = (new Database)->select("SELECT connection_group_id AS id
+                                        FROM guacamole_connection_group
+                                        WHERE parent_id=?", [$this->id]);
+        if (!$data) {
+            return [];
         }
 
         $return = [];
+        foreach ($data as $child) {
+            $group = new self($child['id']);
+            $return[] = $group;
 
-        foreach ($connections as $connection) {
-            $return[] = new Connection($connection['id']);
+            // recursive search
+            $childs = $group->getChildGroups();
+            foreach ($childs as $c) {
+                $return[] = $c;
+            }
+        }
+
+        return $return;
+    }
+
+
+    public function getConnections()
+    {
+        $groups = $this->getChildGroups();
+        $groups[] = $this;
+
+        $return = [];
+        foreach ($groups as $group) {
+            $connections = (new Database)->select("SELECT connection_id AS id
+                                                   FROM guacamole_connection
+                                                   WHERE parent_id=?", [$group->id]);
+            if (!$connections) {
+                continue;
+            }
+
+            foreach ($connections as $connection) {
+                $return[] = new Connection($connection['id']);
+            }
         }
 
         return $return;
@@ -56,8 +85,8 @@ class ConnectionGroup
     public static function getAll()
     {
         $groups = (new Database)->select("SELECT connection_group_id AS id, connection_group_name AS name, parent_id
-                                       FROM guacamole_connection_group
-                                       WHERE connection_group_name <> 'Templates' ORDER BY name");
+                                          FROM guacamole_connection_group
+                                          WHERE connection_group_name <> 'Templates' ORDER BY name");
 
         foreach ($groups as &$group) {
             $parent_id = $group['parent_id'];
