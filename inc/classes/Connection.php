@@ -162,7 +162,7 @@ class Connection
     public static function create($data)
     {
         $connectionId = (new Database)->selectOne("SELECT connection_id FROM guacamole_connection
-                                                   WHERE connection_name=? and parent_id".($data['parent_id'] ? $data['parent_id'] : ' IS NULL'),
+                                                   WHERE connection_name=? and parent_id".($data['parent_id'] ? '='.$data['parent_id'] : ' IS NULL'),
                                                   [$data['connection_name']]);
 
         if (!$connectionId) {
