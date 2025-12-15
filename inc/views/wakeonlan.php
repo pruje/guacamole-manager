@@ -1,6 +1,6 @@
 <h1>Wake on LAN</h1>
 <?php
-    // process form
+    // wake up a connection group from ID
     if (isset($_GET['group']) && $_GET['group'] != '') {
         $alert = 'success';
         $message = '';
@@ -24,8 +24,29 @@
         die();
     }
 
+    // wake up a connection from name
     if (isset($_GET['connection']) && $_GET['connection'] != '') {
         $connection = Connection::getByName(htmlspecialchars($_GET['connection']));
+        if (!$connection) {
+            echo 'Connection not found';
+            die();
+        }
+
+        $alert = 'danger';
+        $message = 'Failed to wake up';
+
+        if ($connection->wakeUp(7) && $connection->wakeUp()) {
+            $alert = 'success';
+            $message = 'Wake on Lan sent';
+        }
+
+        echo '<div class="alert alert-'.$alert.'" role="alert">'.$message.'</div>';
+        die();
+    }
+
+    // wake up a connection from ID
+    if (isset($_GET['id']) && $_GET['id'] != '') {
+        $connection = new Connection(htmlspecialchars($_GET['id']));
         if (!$connection) {
             echo 'Connection not found';
             die();
